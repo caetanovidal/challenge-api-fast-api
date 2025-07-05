@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import time
 import os
 from fastapi.staticfiles import StaticFiles
-
+from extract_text import extract_text_from_upload
 
 app = FastAPI()
 
@@ -17,24 +17,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Allowed file types
-ALLOWED_EXTENSIONS = {".pdf", '.png', '.jpg', '.jpeg', '.bmp', '.tiff'}
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    start_time = time.time()
-    
-    _, ext = os.path.splitext(file.filename)
-    ext = ext.lower()
+    start_time = time.time()    
 
-    if ext not in ALLOWED_EXTENSIONS:
-        raise HTTPException(status_code=400, detail="Unsupported file type.")
+    try:
+        raw_text = extract_text_from_upload(file)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"OCR failed: {str(e)}")
     
-    # Placeholder for future processing
-    # For now, just returning the JSON template
+
     processing_time = round(time.time() - start_time, 2)
-    
     return JSONResponse(content={
+        "raw_text": raw_text,
         "document_type": "Invoice",
         "confidence": 0.92,
         "entities": {
