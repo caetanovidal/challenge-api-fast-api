@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import time
 import os
 from fastapi.staticfiles import StaticFiles
-from extract_text import extract_text_from_upload
+from ocr.extract_text import extract_text_from_upload
 
 app = FastAPI()
 
