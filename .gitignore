@@ -1,3 +1,7 @@
 /.venv
 /__pycache__
 ocr/__pycache__/extract_text.cpython-39.pyc
+embeddings/__pycache__/embed.cpython-39.pyc
+embeddings/__pycache__/create_samples.cpython-39.pyc
+embeddings/__pycache__/__init__.cpython-39.pyc
+ocr/__pycache__/__init__.cpython-39.pyc
