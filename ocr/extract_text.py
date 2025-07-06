@@ -59,26 +59,31 @@ def read_pdf_with_tesseract(file_path):
 
     return text
 
-
-def increase_image_quality(image_path):
+def enhance_and_threshold(image_path):
+    # Step 1: Enhance image (your function)
     img = cv2.imread(image_path)
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img_pil = Image.fromarray(img_rgb)
+
     enhancer = ImageEnhance.Sharpness(img_pil)
-    img_sharp = enhancer.enhance(2.0)  # 1.0 = original; >1 = sharper
+    img_sharp = enhancer.enhance(2.0)
 
-    # 2. Increase Brightness
     enhancer = ImageEnhance.Brightness(img_sharp)
-    img_bright = enhancer.enhance(1.2)  # 1.0 = original
+    img_bright = enhancer.enhance(1.2)
 
-    # 3. Increase Contrast
     enhancer = ImageEnhance.Contrast(img_bright)
     img_contrast = enhancer.enhance(1.5)
 
     img_cv = cv2.cvtColor(np.array(img_contrast), cv2.COLOR_RGB2BGR)
     img_denoised = cv2.fastNlMeansDenoisingColored(img_cv, None, 10, 10, 7, 21)
 
-    return img_denoised
+    # Step 2: Grayscale + Threshold (for OCR)
+    gray = cv2.cvtColor(img_denoised, cv2.COLOR_BGR2GRAY)
+    denoised = cv2.GaussianBlur(gray, (3, 3), 0)
+    _, thresh = cv2.threshold(denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    return thresh
+
 
 
 def extract_text_from_upload(upload_file) -> str:
@@ -99,7 +104,7 @@ def extract_text_from_upload(upload_file) -> str:
 
     try:
         if pdf_or_image(temp_path) == 'image':
-            img = increase_image_quality(temp_path)
+            img = enhance_and_threshold(temp_path)
             text = read_image_with_tesseract(img)
         else:
             text = read_pdf_with_tesseract(temp_path)
