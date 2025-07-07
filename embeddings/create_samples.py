@@ -1,5 +1,8 @@
-from ocr import extract_text
+from ocr import extract_text_2
 import os
+import random
+import shutil
+import json
 
 folders = [
     'advertisement',
@@ -36,9 +39,9 @@ for x in folders:
 
     for file in all_paths:
 
-        img = extract_text.read_image(file)
-        img = extract_text.enhance_and_threshold(img)
-        text = extract_text.read_image_with_tesseract(img)
+        img = extract_text_2.read_image(file)
+        img = extract_text_2.enhance_and_threshold(img)
+        text = extract_text_2.read_image_with_easyocr(img)
         text = text.replace('\n', '\\n')
         samples.append({
             "text": text,

@@ -14,7 +14,7 @@ test_6 = "docs_to_test\\2505955923_5924_email.jpg"
 test_7 = "docs_to_test\\2505620113_file_folder.jpg"
 test_8 = "docs_to_test\\524385089+-5089_handwritten.jpg"
 
-img = read_image(test)
+img = read_image(test_4)
 img = enhance_and_threshold(img)
 text = read_image_with_tesseract(img)
 

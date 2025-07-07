@@ -4,7 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import time
 import os
 from fastapi.staticfiles import StaticFiles
-from ocr.extract_text import extract_text_from_upload
+from ocr.extract_text_2 import extract_text_from_upload
+from embeddings.generate import classify_document_2
 
 app = FastAPI()
 
@@ -29,12 +30,13 @@ async def upload_file(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"OCR failed: {str(e)}")
     
+    document_type, confidence = classify_document_2(raw_text)
 
     processing_time = round(time.time() - start_time, 2)
     return JSONResponse(content={
         "raw_text": raw_text,
-        "document_type": "Invoice",
-        "confidence": 0.92,
+        "document_type": {document_type},
+        "confidence": {confidence},
         "entities": {
             "invoice_number": "INV-12345",
             "date": "2024-01-01",
