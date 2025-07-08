@@ -32,6 +32,8 @@ async def upload_file(file: UploadFile = File(...)):
     
     document_type, confidence = classify_document_2(raw_text)
 
+    
+
     processing_time = round(time.time() - start_time, 2)
     return JSONResponse(content={
         "raw_text": raw_text,
