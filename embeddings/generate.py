@@ -27,7 +27,7 @@ class DocumentType(Enum):
     form = 15
     news_article = 16
 
-json_folder = "sample_documents\\sample_json"
+json_folder = "processed_documents\\json_train"
 index_path = "doc_index.faiss"
 labels_path = "doc_labels.pkl"
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
