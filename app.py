@@ -35,8 +35,8 @@ async def upload_file(file: UploadFile = File(...)):
     processing_time = round(time.time() - start_time, 2)
     return JSONResponse(content={
         "raw_text": raw_text,
-        "document_type": {document_type},
-        "confidence": {confidence},
+        "document_type": f"{document_type.name}",
+        "confidence": f"{confidence}",
         "entities": {
             "invoice_number": "INV-12345",
             "date": "2024-01-01",
