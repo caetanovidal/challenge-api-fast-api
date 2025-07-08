@@ -6,6 +6,7 @@ import os
 from fastapi.staticfiles import StaticFiles
 from ocr.extract_text_2 import extract_text_from_upload
 from embeddings.generate import classify_document_2
+from api_llm import send_to_llm
 
 app = FastAPI()
 
@@ -32,19 +33,16 @@ async def upload_file(file: UploadFile = File(...)):
     
     document_type, confidence = classify_document_2(raw_text)
 
-    
+    entities = send_to_llm(document_type, raw_text)
+
+    print(entities)
+    print(raw_text)
 
     processing_time = round(time.time() - start_time, 2)
     return JSONResponse(content={
-        "raw_text": raw_text,
         "document_type": f"{document_type.name}",
         "confidence": f"{confidence}",
-        "entities": {
-            "invoice_number": "INV-12345",
-            "date": "2024-01-01",
-            "total_amount": "$450.00",
-            "vendor_name": "ABC Corp"
-        },
+        "entities": entities,
         "processing_time": f"{processing_time}s"
     })
 
