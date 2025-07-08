@@ -7,14 +7,6 @@ load_dotenv()
 
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[{"role": "user", "content": "Hello, how are you?"}]
-)
-
-print(response.choices[0].message.content)
-
-
 def field_list_factory(document_type):
     if document_type.value == 1:
         return ["brand name", "product"]
