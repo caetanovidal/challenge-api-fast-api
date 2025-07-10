@@ -32,3 +32,19 @@ uvicorn app:app --reload
 you may need to run this as well if you are facing connecting problems
 
 "C:\Users\caetano\AppData\Local\Programs\Python\Python39\python.exe" -m pip install --upgrade certifi
+
+
+--- DOCKER ---
+
+create .env file before building 
+
+on .env add you gpt api key
+
+on terminal build the docker (you need to have docker desktop installed and open)
+docker build -t easyocr-api .
+after building
+docker run -p 8000:8000 easyocr-api
+
+then open in your brownser
+
+http://127.0.0.1:8000/
