@@ -1,7 +1,3 @@
-Great work so far! Based on the structure and functionality of your project, here’s a **comprehensive and professional `README.md`** you can use as a base. It includes installation, usage, API reference, project structure, and more.
-
----
-
 # 🧠 EasyOCR + GPT Document Analyzer API
 
 A FastAPI-based web service for document analysis. This API accepts PDF or image files, extracts text using OCR (EasyOCR), classifies the document using embeddings (FAISS + Sentence Transformers), and extracts structured entities using OpenAI's GPT models.
