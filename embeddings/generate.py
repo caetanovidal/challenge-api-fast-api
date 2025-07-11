@@ -107,6 +107,7 @@ def classify_document(text: str, threshold: float = 0.3) -> Tuple[Optional[Docum
     class_value = doc_labels[best_index]
     predicted_class = DocumentType(class_value)
 
+    best_score = float(best_score)
     return predicted_class, best_score
 
 
