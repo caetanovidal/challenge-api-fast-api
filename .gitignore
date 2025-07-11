@@ -8,3 +8,5 @@ ocr/__pycache__/__init__.cpython-39.pyc
 embeddings/__pycache__/generate.cpython-39.pyc
 ocr/__pycache__/extract_text_2.cpython-39.pyc
 .env
+embeddings/__pycache__/generate.cpython-39.pyc
+ocr/__pycache__/extract_text_2.cpython-39.pyc
