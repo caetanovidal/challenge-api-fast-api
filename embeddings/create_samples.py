@@ -1,77 +1,49 @@
 from ocr import extract_text_2
 import os
-import random
-import shutil
 import json
 
-random.seed(42)
+# Base directories
+base_input_dir_train = "C:\\Users\\Caetano\\Desktop\\estudos\\challenge-api-fast-api\\processed_documents\\train"
+base_input_dir_test = "C:\\Users\\Caetano\\Desktop\\estudos\\challenge-api-fast-api\\processed_documents\\test"
+base_output_dir_train = "C:\\Users\\Caetano\\Desktop\\estudos\\challenge-api-fast-api\\processed_documents\\json_train"
+base_output_dir_test = "C:\\Users\\Caetano\\Desktop\\estudos\\challenge-api-fast-api\\processed_documents\\json_test"
 
-base_input_dir = "D:/caetano/appz/Estudos/challenge-api-fast-api/sample_documents"
-base_output_dir = "D:/caetano/appz/Estudos/challenge-api-fast-api/processed_documents"
-
+# Folder (class) names
 folders = [
-    'advertisement',
-    'budget',
-    'email',
-    'file_folder',
-    'form',
-    'handwritten',
-    'invoice',
-    'letter',
-    'memo',
-    'news_article',
-    'presentation',
-    'questionnaire',
-    'resume',
-    'scientific_publication',
-    'scientific_report',
-    'specification'
+    'advertisement', 'budget', 'email', 'file_folder', 'form', 'handwritten',
+    'invoice', 'letter', 'memo', 'news_article', 'presentation', 'questionnaire',
+    'resume', 'scientific_publication', 'scientific_report', 'specification'
 ]
 
-for x in folders:
-    folder_path = os.path.join(base_input_dir, x)
+# Ensure output dirs exist
+os.makedirs(base_output_dir_train, exist_ok=True)
+os.makedirs(base_output_dir_test, exist_ok=True)
 
-    # List all files only (ignore dirs)
-    all_files = []
-    for root, dirs, files in os.walk(folder_path):
-        for name in files:
-            all_files.append(os.path.join(root, name))
+# Function to process a dataset split
+def process_split(input_dir, output_dir, split_name):
+    for label in folders:
+        folder_path = os.path.join(input_dir, label)
+        if not os.path.isdir(folder_path):
+            continue
 
-    # Shuffle and split
-    random.shuffle(all_files)
-    split_index = int(0.8 * len(all_files))
-    train_files = all_files[:split_index]
-    test_files = all_files[split_index:]
+        samples = []
 
-    # Output directories
-    train_dir = os.path.join(base_output_dir, 'train', x)
-    test_dir = os.path.join(base_output_dir, 'test', x)
-    os.makedirs(train_dir, exist_ok=True)
-    os.makedirs(test_dir, exist_ok=True)
+        for root, dirs, files in os.walk(folder_path):
+            for filename in files:
+                file_path = os.path.join(root, filename)
+                try:
+                    img = extract_text_2.read_image(file_path)
+                    img = extract_text_2.enhance_and_threshold(img)
+                    text = extract_text_2.read_image_with_easyocr(img).replace('\n', '\\n')
+                    samples.append({"text": text, "label": label})
+                except Exception as e:
+                    print(f"Error processing {file_path}: {e}")
 
-    samples_train = []
-    samples_test = []
+        # Save JSON
+        output_file = os.path.join(output_dir, f"samples_{label}.json")
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(samples, f, indent=2, ensure_ascii=False)
 
-    # Move files and extract OCR text
-    for file in train_files:
-        new_path = os.path.join(train_dir, os.path.basename(file))
-        shutil.copy(file, new_path)  # Use copy() if you want to preserve originals
-        img = extract_text_2.read_image(new_path)
-        img = extract_text_2.enhance_and_threshold(img)
-        text = extract_text_2.read_image_with_easyocr(img).replace('\n', '\\n')
-        samples_train.append({"text": text, "label": x})
-
-    for file in test_files:
-        new_path = os.path.join(test_dir, os.path.basename(file))
-        shutil.copy(file, new_path)
-        img = extract_text_2.read_image(new_path)
-        img = extract_text_2.enhance_and_threshold(img)
-        text = extract_text_2.read_image_with_easyocr(img).replace('\n', '\\n')
-        samples_test.append({"text": text, "label": x})
-
-    # Save as JSON
-    with open(os.path.join(base_output_dir, f"samples_train_{x}.json"), "w", encoding="utf-8") as f:
-        json.dump(samples_train, f, indent=2, ensure_ascii=False)
-
-    with open(os.path.join(base_output_dir, f"samples_test_{x}.json"), "w", encoding="utf-8") as f:
-        json.dump(samples_test, f, indent=2, ensure_ascii=False)
+# Process both train and test splits
+process_split(base_input_dir_train, base_output_dir_train, "train")
+process_split(base_input_dir_test, base_output_dir_test, "test")
