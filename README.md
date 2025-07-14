@@ -1,3 +1,8 @@
+# Tutorial
+
+if you need some help and check on my opinion:
+https://youtu.be/rR9qO2GF3E4
+
 # 🧠 EasyOCR + GPT Document Analyzer API
 
 A FastAPI-based web service for document analysis. This API accepts PDF or image files, extracts text using OCR (EasyOCR), classifies the document using embeddings (FAISS + Sentence Transformers), and extracts structured entities using OpenAI's GPT models.
