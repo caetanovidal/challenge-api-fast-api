@@ -7,6 +7,10 @@ from PIL import Image
 import uuid
 import shutil
 import easyocr
+import pytesseract
+
+
+pytesseract.pytesseract.tesseract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
 UPLOAD_DIR = "temp_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -34,6 +38,10 @@ def read_image_with_easyocr(image_input):
 
     results = reader.readtext(image_input, detail=0)  # detail=0 returns only the text
     return "\n".join(results)
+
+def read_image_with_tesseract(image_input):
+    custom_config = r'--oem 3 --psm 6'
+    return pytesseract.image_to_string(image_input, config=custom_config)
 
 
 def read_image(image_path):
