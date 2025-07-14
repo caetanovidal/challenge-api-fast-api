@@ -35,7 +35,6 @@ async def upload_file(file: UploadFile = File(...)):
 
     entities = send_to_llm(document_type, raw_text)
 
-    print(entities)
     print(raw_text)
 
     processing_time = round(time.time() - start_time, 2)

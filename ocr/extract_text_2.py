@@ -56,27 +56,32 @@ def enhance_and_threshold(image):
     img = np.array(image.convert("RGB"))
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
-    # Resize (scale up small text)
+    # Resize
     scale_factor = 1.5
-    width = int(img.shape[1] * scale_factor)
-    height = int(img.shape[0] * scale_factor)
-    img = cv2.resize(img, (width, height), interpolation=cv2.INTER_CUBIC)
+    img = cv2.resize(img, (0, 0), fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_CUBIC)
 
-    # Convert to grayscale
+    # Grayscale + CLAHE for contrast
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    gray = clahe.apply(gray)
 
-    # Denoising while preserving edges
-    filtered = cv2.bilateralFilter(gray, d=11, sigmaColor=75, sigmaSpace=75)
+    # Noise reduction
+    filtered = cv2.bilateralFilter(gray, 11, 75, 75)
 
-    # Adaptive thresholding for uneven lighting
-    thresh = cv2.adaptiveThreshold(
-        filtered, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        cv2.THRESH_BINARY, 21, 10
-    )
+    # Optional: Sharpen
+    sharpened = cv2.filter2D(filtered, -1, np.array([[0, -1, 0], [-1, 5,-1], [0, -1, 0]]))
 
-    # Optional: Morphological operations to enhance characters
+    # Thresholding
+    thresh_adaptive = cv2.adaptiveThreshold(sharpened, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                            cv2.THRESH_BINARY, 21, 10)
+    _, thresh_otsu = cv2.threshold(sharpened, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Choose best result
+    processed = thresh_adaptive  # or thresh_otsu, depending on your testing
+
+    # Dilation
     kernel = np.ones((2, 2), np.uint8)
-    processed = cv2.dilate(thresh, kernel, iterations=1)
+    processed = cv2.dilate(processed, kernel, iterations=1)
 
     return processed
 
